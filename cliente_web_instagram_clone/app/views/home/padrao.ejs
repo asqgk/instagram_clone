@@ -31,16 +31,44 @@
 										'<span class="titulo">' + 
 											data[i].titulo +
 										'</span>' +
-										'<img src="http://localhost:8080/uploads/'+ data[i].url_imagem+'" />' +
+										'<img src="http://localhost:8080/imagens/'+ data[i].url_imagem+'" />' +
+										'<div class="comentar">'+
+											'<input type="text" class="form-control input_comentario" id="postagem_'+data[i]._id+'" placeholder="Adicione um comentário...">'+
+											'<button class="btn btn-default btn_postagem" value="'+data[i]._id+'" type="button">Comentar</button>' +
+										'</div>'+
 									'</div>'
 								)
 							}
+
+							$('.btn_postagem').click(function(){
+								const id = this.value;
+								const id_input_comentario = "postagem_"+id;
+								const comentario = $('#'+id_input_comentario).val();
+
+								const xhr = new XMLHttpRequest()
+								
+								try{
+									xhr.open('PUT','http://localhost:8080/api/'+id)									
+								} catch (e){
+									alert( "error while opening " + e.message )
+								}						
+								xhr.setRequestHeader('Content-Type', 'application/json')
+								
+								xhr.onload = function(){
+									if(xhr.status === 200){
+										window.location.href = '/home'
+									}									
+								}		
+								
+								xhr.send(JSON.stringify({comentario : comentario}));
+							});
+
+							
 						}
 					}
 
 					xhr.send()
 				}
-
 				carrega_postagens();
 
 				$('#btn_incluir').click(function(){
