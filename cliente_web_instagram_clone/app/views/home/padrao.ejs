@@ -26,19 +26,56 @@
 							const data = $.parseJSON(xhr.responseText)
 							
 							for(i = 0; i < data.length; i++){
+
 								$('#container_timeline').append(
 									'<div class="publicacao">'+
 										'<span class="titulo">' + 
 											data[i].titulo +
 										'</span>' +
 										'<img src="http://localhost:8080/imagens/'+ data[i].url_imagem+'" />' +
+										'<div class="comentarios" id="comentarios_'+data[i]._id+'"></div>'+
 										'<div class="comentar">'+
 											'<input type="text" class="form-control input_comentario" id="postagem_'+data[i]._id+'" placeholder="Adicione um comentário...">'+
 											'<button class="btn btn-default btn_postagem" value="'+data[i]._id+'" type="button">Comentar</button>' +
 										'</div>'+
 									'</div>'
 								)
+
+								if(data[i].comentarios != undefined){
+									// variável comentarios recebe um array
+									const comentarios = data[i].comentarios
+
+									for(j = 0; j < comentarios.length; j++){
+										$('#comentarios_'+data[i]._id).append(
+											'<div class="txt_comentario">'+
+												'<button type="button" value="'+comentarios[j].id_comentario+'" class="btn btn-default btn_remover_postagem">X</button>'+
+												comentarios[j].comentario +
+											'</div>'
+										)
+									}
+								}
 							}
+
+							$('.btn_remover_postagem').click(function(){
+								const id_comentario = this.value;
+
+								const xhr = new XMLHttpRequest()
+								
+								try{
+									xhr.open('DELETE','http://localhost:8080/api/'+id_comentario)									
+								} catch (e){
+									alert( "error while opening " + e.message )
+								}						
+								
+								xhr.onload = function(){
+									if(xhr.status === 200){
+										// alert(xhr.responseText)
+										window.location.href = '/home'
+									}									
+								}		
+								
+								xhr.send(JSON.stringify({id_comentario : id_comentario}));
+							})
 
 							$('.btn_postagem').click(function(){
 								const id = this.value;
@@ -51,8 +88,9 @@
 									xhr.open('PUT','http://localhost:8080/api/'+id)									
 								} catch (e){
 									alert( "error while opening " + e.message )
-								}						
-								xhr.setRequestHeader('Content-Type', 'application/json')
+								}				
+								// envia informação contida no body do request
+								xhr.setRequestHeader('Content-Type', 'application/json') 
 								
 								xhr.onload = function(){
 									if(xhr.status === 200){
