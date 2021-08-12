@@ -1,2 +1,2 @@
 # instagram_clone
-Clone do instagram utilizando banco de dados MongoDB.
+API utilizando Express e MongoDB.
